@@ -124,7 +124,7 @@ by entering the the following command at the commandline after training has comm
     tensorboard --logdir=/surferdetection/surferdetection_train
 
 
-##Launching and Training the Model##
+**Launching and Training the Model**
 
 Launch training from the commandline with the script surferdetection_train.py.
 
@@ -152,7 +152,7 @@ This evaluation simply gives accuracy on the evaluation set as a percentage.  Yo
 The training script calculates the moving average version of all learned variables. The evaluation script substitutes all learned model 
 parameters with the moving average version. This substitution boosts model performance at evaluation time.
 
-##Visualize Unseen Scenes##
+**Visualize Unseen Scenes**
 
 The Jupyter Notebook file 'surferdetection_predictscene.ipynb' has been provided to help you visualize prediction on unseen scenes.
 This notebook will utilize the surferdetection_predict.py file that makes use of a fully-trained surfer detector model in the surferdetection_restore directory.
