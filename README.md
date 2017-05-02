@@ -32,7 +32,7 @@ The goal is to detect surfers towards the quantification of crowd sizes.
 3. Visualize predictions on unseen Scenes
 
 ## Highlights of the CNN
-* Lean architecture of 2 convolutional layers and 2 fully connected layers, requiring only 13.6 million multiply/add operations per image
+* Lean architecture of 2 convolutional layers and 2 fully connected layers, requiring only 13.6 million multiply/add operations per image patch
 * Trainable in under an hour on a CPU
 * 5% error rate on evaluation set
 * Leaky RELUs, Local Response Normalization, decaying learning rate
