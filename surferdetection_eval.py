@@ -1,36 +1,30 @@
-# NOTE THESE TEMPLATES COME FROM TENSORFLOW TUTORIALS,
-# WHICH HAVE THE FOLLOWING LICENSE RESTRICTIONS
-#
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-"""
-Accuracy:
-surferdetection_train.py achieves ~94% accuracy after 130K steps (13 epochs of
-data) as judged by surferdetection_eval.py.
+##
+## Surfer Detection
+## surferdetection_eval.py
+##
+## Original Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+##
+## Originally licensed under the Apache License, V. 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+##
+## All modifications attributed to Justin Fung, 2017.
+##
+## ====================================================================
+"""Accuracy:
+  surferdetection_train.py achieves ~94% accuracy after 130K steps (13 epochs
+  of data) as judged by surferdetection_eval.py.
 
-Speed: With on-line training.
+Speed (with on-line training):
 
-System                       | Step Time (sec/image)  |     Accuracy
+System                       | Step Time (sec/img) | Accuracy
 ------------------------------------------------------------------
-1 CPU 2.6 GHz Intel Core i5  | 0.03                   | ~94% at 130K steps (1 hour)
+1 CPU 2.6 GHz Intel Core i5  | 0.03                | ~94% at 130K steps (1 hr)
 
 Usage:
-Please see the README for how to download the surferdetection
-data set, compile the program and train the model.
+  Please see the README for how to download the surferdetection
+  data set, compile the program and train the model.
 
-Eval restores from a traning in progress, not a restored model.
+  Eval restores from a traning in progress, not a restored model.
 
 """
 from __future__ import absolute_import
@@ -53,7 +47,7 @@ tf.app.flags.DEFINE_string('eval_dir', 'surferdetection_eval',
 tf.app.flags.DEFINE_string('eval_data', 'test',
                            """Either 'test' or 'train_eval'.""")
 tf.app.flags.DEFINE_string('checkpoint_dir', 'surferdetection_train',
-                           """Directory where to read in progress checkpoints.""")
+                      """Directory where to read in progress checkpoints.""")
 tf.app.flags.DEFINE_integer('eval_interval_secs', 120,
                             """How often to run the eval.""")
 tf.app.flags.DEFINE_integer('num_examples', 500,

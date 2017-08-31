@@ -1,20 +1,15 @@
-# NOTE THESE TEMPLATES COME FROM TENSORFLOW TUTORIALS,
-# WHICH HAVE THE FOLLOWING LICENSE RESTRICTIONS
-#
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
+##
+## Surfer Detection
+## surferdetection_input.py
+##
+## Original Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+##
+## Originally licensed under the Apache License, V. 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+##
+## All modifications attributed to Justin Fung, 2017.
+##
+## ====================================================================
 
 """Routine for decoding the SURFERDETECTION binary file format."""
 
@@ -24,11 +19,12 @@ from __future__ import print_function
 
 import os
 import random
-import surferdetection_augmentation
-
 from six.moves import xrange  # pylint: disable=redefined-builtin
+
 import tensorflow as tf
 from PIL import Image
+
+import surferdetection_augmentation
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -59,8 +55,11 @@ NUM_EVAL_IMAGES = 500
 NUM_EVAL_IMG_PER_CLASS = [250,250]
 
 # If using unbalanced data
-NUM_EXAMPLES_PER_BALANCED_CLASS = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / NUM_CLASSES)
-OVERSAMPLE_FACTOR_PER_CLASS = [int(round(NUM_EXAMPLES_PER_BALANCED_CLASS/j)) for j in NUM_TRAIN_IMG_PER_CLASS]
+NUM_EXAMPLES_PER_BALANCED_CLASS = 
+       int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / NUM_CLASSES)
+OVERSAMPLE_FACTOR_PER_CLASS = 
+       [int(round(NUM_EXAMPLES_PER_BALANCED_CLASS/j))
+        for j in NUM_TRAIN_IMG_PER_CLASS]
 
 
 def read_surferdetection(filename_queue):
@@ -113,9 +112,9 @@ def read_surferdetection(filename_queue):
   # The first bytes represent the label, which we convert from uint8->int32.
   result.label = tf.cast(tf.slice(record_bytes, [0], [label_bytes]), tf.int32)
 
-  # The remaining bytes after the label represent the image
-  # 'value' represents the image which we reshape
-  # from [depth * height * width] to [depth, height, width].
+  # The remaining bytes after the label represent the image. 'value' represents
+  # the image which we reshape from [depth * height * width] to 
+  # [depth, height, width].
   depth_major = tf.reshape(tf.slice(record_bytes, [label_bytes], [image_bytes]),
                           [result.depth, result.height, result.width])
   
@@ -127,7 +126,8 @@ def read_surferdetection(filename_queue):
 
 def _generate_image_and_label_batch(images, labels, min_queue_examples,
                                     batch_size, shuffle):
-  """Construct a queued batch of images and labels.
+  """Construct a queued batch of images and labels that shuffles the examples,
+  and then read 'batch_size' images + labels from the example queue.
 
   Args:
     image: 3-D Tensor of [height, width, 3] of type.float32.
@@ -141,11 +141,10 @@ def _generate_image_and_label_batch(images, labels, min_queue_examples,
     images: Images. 4D tensor of [batch_size, height, width, 3] size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
-  # Create a queue that shuffles the examples, and then
-  # read 'batch_size' images + labels from the example queue.
 
   # A shuffling queue into which tensors from tensors are enqueued.
   num_preprocess_threads = 16
+
   if shuffle:
     images, label_batch = tf.train.shuffle_batch(
         [images, labels],
@@ -170,73 +169,87 @@ def _generate_image_and_label_batch(images, labels, min_queue_examples,
 
 
 def distorted_inputs(data_dir, batch_size):
-  """Construct distorted input for SURFERDETECTION training using the Reader ops.
+  """Construct distorted input for SURFERDETECTION training using the Reader
+  ops.
 
   Args:
     data_dir: Path to the SURFERDETECTION data directory.
     batch_size: Number of images per batch.
 
   Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
+    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3]
+            size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
   filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
-               for i in xrange(1, FLAGS.num_bins+1)] #5 bins for surferdetection training, 1 for eval
+               for i in xrange(1, FLAGS.num_bins+1)]
   for f in filenames:
     if not tf.gfile.Exists(f):
       raise ValueError('Failed to find file: ' + f)
 
-  # Create a queue that produces the filenames to read, ready for an input pipeline.
+  # Create queue that produces the files to read, ready for an input pipeline.
   filename_queue = tf.train.string_input_producer(filenames) 
 
   # Use the Reader Ops to read examples from files in the filename queue.
   read_input = read_surferdetection(filename_queue)
   
-  # cast types
-  reshaped_image = tf.cast(read_input.uint8image, tf.uint8) #tensor of type uint8, [80,80,3]
+  # Cast types:
+  reshaped_image = tf.cast(read_input.uint8image, tf.uint8) #[80,80,3]
   label = tf.cast(read_input.label, tf.int32) #1d tensor of dtype int32
   
-  # if OVERSAMPLE the training set due to unbalanced labels 
+  # If OVERSAMPLE the training set due to unbalanced labels:
   if FLAGS.oversample == True:
     reshaped_image = tf.expand_dims(reshaped_image, 0) # [1,80,80,3]
     [os_images, os_labels] = [reshaped_image,label]
 
-    # boolean for the label
-    pred0 = tf.reshape(tf.equal(label, tf.convert_to_tensor([0])), []) #tf.bool
-    pred1 = tf.reshape(tf.equal(label, tf.convert_to_tensor([1])), []) #tf.bool
+    # Boolean for the label:
+    pred0 = tf.reshape(tf.equal(label, tf.convert_to_tensor([0])), [])
+    pred1 = tf.reshape(tf.equal(label, tf.convert_to_tensor([1])), [])
 
-    # functions to vertically stack tensor in a batch
-    def f0(): return tf.concat(0, [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[0]), tf.concat(0, [label]*OVERSAMPLE_FACTOR_PER_CLASS[0])
-    def f1(): return tf.concat(0, [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[1]), tf.concat(0, [label]*OVERSAMPLE_FACTOR_PER_CLASS[1])
+    # Vertically stack tensors in a batch:
+    def f0(): return tf.concat(
+        0,
+        [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[0]),
+        tf.concat(0, [label]*OVERSAMPLE_FACTOR_PER_CLASS[0])
+    def f1(): return tf.concat(
+        0,
+        [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[1]),
+        tf.concat(0, [label]*OVERSAMPLE_FACTOR_PER_CLASS[1])
   
     [os_images, os_labels] = tf.cond(pred0, f0, lambda: [os_images, os_labels])
     [os_images, os_labels] = tf.cond(pred1, f1, lambda: [os_images, os_labels])
 
-  # if DISTORT the training set for data augmentation
+  # If DISTORT the training set for data augmentation:
   if (FLAGS.distortion == True) and (FLAGS.oversample == False):
     def distort(x): return tf.reshape(
-                        tf.py_func(surferdetection_augmentation.augment, [x], [tf.uint8], stateful=True),
-                        [80,80,3])
+                               tf.py_func(surferdetection_augmentation.augment,
+                                          [x], [tf.uint8], stateful=True),
+                           [80,80,3])
+
     os_images = distort(reshaped_image)
     os_labels = label
 
   if (FLAGS.distortion == True) and (FLAGS.oversample == True):
     def distort(x): return tf.reshape(
-                        tf.py_func(surferdetection_augmentation.augment, [x], [tf.uint8], stateful=True),
-                        [80,80,3])
+                               tf.py_func(surferdetection_augmentation.augment,
+                                          [x], [tf.uint8], stateful=True),
+                           [80,80,3])
+
     os_images = tf.map_fn(distort, os_images)
 
   # Divide by the range of the pixels to normalize [0,1], cast to float32.
-  os_images = tf.div(tf.to_float(os_images),tf.constant(255,dtype=tf.float32))
+  os_images = tf.div(tf.to_float(os_images),
+                     tf.constant(255, dtype=tf.float32))
   
   # Check data for issues
   tf.check_numerics(os_images, message="bad data!", name=None)
 
   # Ensure that the random shuffling has good mixing properties.
   min_fraction_of_examples_in_queue = 0.50
-  min_queue_examples = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN * min_fraction_of_examples_in_queue) # =5000
-  print ('Filling queue with %d SURFERDETECTION images before starting to train. '
-          'This will take a few minutes.' % min_queue_examples)
+  min_queue_examples = int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN *
+                           min_fraction_of_examples_in_queue) # =5000
+  print ('Filling queue with %d SURFERDETECTION images before starting to train.'
+         'This will take a few minutes.' % min_queue_examples)
 
   # Generate a batch of images and labels by building up a queue of examples.
   return _generate_image_and_label_batch(os_images, 

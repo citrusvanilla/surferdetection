@@ -1,27 +1,22 @@
-# NOTE THESE TEMPLATES COME FROM TENSORFLOW TUTORIALS,
-# WHICH HAVE THE FOLLOWING LICENSE RESTRICTIONS
-#
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
+##
+## Surfer Detection
+## surferdetection.py
+##
+## Original Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+##
+## Originally licensed under the Apache License, V. 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+##
+## All modifications attributed to Justin Fung, 2017.
+##
+## ====================================================================
 
 """Builds the SURFERDETECTION network.
 
 Summary of available functions:
 
- # Compute input images and labels for training. If you would like to run
- # evaluations, use inputs() instead.
+ # Compute input images and labels for training. If you would like to
+ # run evaluations, use inputs() instead.
  inputs, labels = distorted_inputs()
 
  # Compute inference on the model inputs to make a prediction.
@@ -36,7 +31,7 @@ Summary of available functions:
  # Create a graph to run one step of training with respect to the loss.
  train_op = train(loss, global_step)
 """
-# pylint: disable=missing-docstring
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -65,8 +60,10 @@ tf.app.flags.DEFINE_boolean('use_fp16', False,
 # Global constants describing the SURFERDETECTION data set.
 IMAGE_SIZE = surferdetection_input.IMAGE_SIZE # =80
 NUM_CLASSES = surferdetection_input.NUM_CLASSES # =5
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = surferdetection_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # =10000
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = surferdetection_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL # =997
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 
+               surferdetection_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # =10000
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 
+               surferdetection_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL # =997
 
 # Paramters for the training op
 alpha = 5.5 # leaky RELUs, lines 219, 239 
@@ -74,15 +71,17 @@ alpha = 5.5 # leaky RELUs, lines 219, 239
 # Constants describing the training process.
 MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
 NUM_EPOCHS_PER_DECAY = 6      # Epochs after which learning rate decays.
-LEARNING_RATE_DECAY_FACTOR = 0.5  # Learning rate decay factor (halves the learning rate).
-INITIAL_LEARNING_RATE = 0.0025       # Initial learning rate (try between 0.002 and 0.003).
+LEARNING_RATE_DECAY_FACTOR = 0.5  # Learning rate decay factor.
+INITIAL_LEARNING_RATE = 0.0025  # Initial learning rate.
 
 # If a model is trained with multiple GPUs, prefix all Op names with tower_name
 # to differentiate the operations. Note that this prefix is removed from the
 # names of the summaries when visualizing a model.
 TOWER_NAME = 'tower'
 
+#  Compressed Tarball name.
 FILE_NAME = 'surferdetection-bin.tar.gz'
+
 
 def _activation_summary(x):
   """Helper to create summaries for activations.
@@ -207,9 +206,10 @@ def inference(images):
   # by replacing all instances of tf.get_variable() with tf.Variable().
 
   # CONVOLUTIONAL LAYER 1
+  # (results in 8 (80x80) feature maps)
   with tf.variable_scope('conv1') as scope:
     kernel = _variable_with_weight_decay('weights',
-                                         shape=[9, 9, 3, 8],  # 8 (9x9x3) filters makes 8 (80x80) feature maps
+                                         shape=[9, 9, 3, 8],
                                          stddev=0.09,
                                          wd=0.001)
     conv = tf.nn.conv2d(images, kernel, [1, 1, 1, 1], padding='SAME')
@@ -220,16 +220,19 @@ def inference(images):
     _activation_summary(conv1)
 
   # MAX POOLING LAYER 1
+  # (results in 8 (40x40) feature maps)
   pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
-                         padding='SAME', name='pool1') # stride of 2 pooling makes 8 (40x40) feature maps
+                         padding='SAME', name='pool1')
 
   # LOCAL RESPONSE NORMALIZATION
-  norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+  norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+                    name='norm1')
 
   # CONVOLUTIONAL LAYER 2
+  # (results in 8 (40x40) feature maps)
   with tf.variable_scope('conv2') as scope:
     kernel = _variable_with_weight_decay('weights',
-                                         shape=[5, 5, 8, 8],  # 8 (5x5x8) filters makes 8 (40x40) feature maps
+                                         shape=[5, 5, 8, 8],
                                          stddev=0.09,
                                          wd=0.001)
     conv = tf.nn.conv2d(norm1, kernel, [1, 1, 1, 1], padding='SAME')
@@ -240,10 +243,12 @@ def inference(images):
     _activation_summary(conv2)
 
   # LOCAL RESPONSE NORMALIZATION
-  norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
+  norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, 
+                    name='norm2')
 
   # MAX POOLING LAYER 2
-  pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],    # stride of 2 pooling makes 8 (20x20) feature maps
+  # (results in 8 (20x20) feature maps)
+  pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
 
   # FULLY CONNECTED LAYER 1
@@ -254,7 +259,8 @@ def inference(images):
     weights = _variable_with_weight_decay('weights', shape=[dim, 128],
                                           stddev=0.025, wd=0.001)
     biases = _variable_on_cpu('biases', [128], tf.constant_initializer(0.2))
-    #fc1 = tf.nn.dropout(tf.matmul(reshape, weights) + biases, keep_prob=0.75, name=scope.name)
+    #fc1 = tf.nn.dropout(tf.matmul(reshape, weights) + biases, keep_prob=0.75, 
+                        #name=scope.name)
     fc1 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
     _activation_summary(fc1)
 
@@ -263,7 +269,8 @@ def inference(images):
     weights = _variable_with_weight_decay('weights', shape=[128, 128],
                                           stddev=0.025, wd=0.001)
     biases = _variable_on_cpu('biases', [128], tf.constant_initializer(0.2))
-    #fc2 = tf.nn.dropout(tf.matmul(fc1, weights) + biases, keep_prob=0.75, name=scope.name)
+    #fc2 = tf.nn.dropout(tf.matmul(fc1, weights) + biases, keep_prob=0.75,
+                        #name=scope.name)
     fc2 = tf.nn.relu(tf.matmul(fc1, weights) + biases, name=scope.name)
     _activation_summary(fc2)
 
@@ -392,10 +399,11 @@ def train(total_loss, global_step):
   # Compute gradients.
   with tf.control_dependencies([loss_averages_op]):
     opt = tf.train.GradientDescentOptimizer(lr)
-    grads_and_vars = opt.compute_gradients(total_loss) # grads_and_vars is a list of tuples (gradient, variable).  
+    grads_and_vars = opt.compute_gradients(total_loss)
 
   # Apply gradients.
-  apply_gradient_op = opt.apply_gradients(grads_and_vars, global_step=global_step)
+  apply_gradient_op = opt.apply_gradients(grads_and_vars, 
+                                          global_step=global_step)
 
   # Add histograms for trainable variables.
   for var in tf.trainable_variables():
@@ -425,15 +433,15 @@ def maybe_download_and_extract():
      through the author.
   """
 
-  dest_directory = FLAGS.data_dir #    = '/surferdetection_data'
+  dest_directory = FLAGS.data_dir
 
   if not os.path.exists(dest_directory):
     os.makedirs(dest_directory)
   #filename = DATA_URL.split('/')[-1]
-  filename = FILE_NAME.split('/')[-1] #  = 'surferdetection-bin.tar.gz'
-  filepath = os.path.join(dest_directory,filename) #  = '/surferdetection_data/surferdetection-bin.tar.gz'
-  extracted_filename = filename.split('.')[0]  #  = 'surferdetection-bin'
-  extracted_filepath = os.path.join(dest_directory,extracted_filename) #  = '/surferdetection_data/surferdetection-bin'
+  filename = FILE_NAME.split('/')[-1]
+  filepath = os.path.join(dest_directory,filename)
+  extracted_filename = filename.split('.')[0]
+  extracted_filepath = os.path.join(dest_directory,extracted_filename)
 
   if not os.path.exists(filepath):
     def _progress(count, block_size, total_size):
