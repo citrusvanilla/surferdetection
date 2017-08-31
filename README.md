@@ -5,11 +5,10 @@
 ![Surfer Detection Example](http://i.imgur.com/QaWJIU3.jpg?1)
 
 This project contains a Convolutional Neural Network framework for detecting surfers, 
-built in Python 2 that utilizes Google's Tensorflow.  For adherents of Google's awesome
-[Tensorflow](http://tensorflow.org) project, you recognize the structure of this project
-follows closely the Deep CNN tutorial found [here](https://www.tensorflow.org/tutorials/deep_cnn/).
+built in Python 2 using Google's Tensorflow.  You can follow Google's awesome
+[Tensorflow](http://tensorflow.org) project, by referencing the Deep CNN tutorial found [here](https://www.tensorflow.org/tutorials/deep_cnn/).
 
-The model contained herein is trained on scenes from one of the 150 cameras from [Surfline](http://surfline.com)-
+The model contained here is trained on scenes from one of the 150 cameras from [Surfline](http://surfline.com)-
 specifically, the [Manasquan Inlet](http://www.surfline.com/surf-report/manasquan-inlet-mid-atlantic_4278/) camera
 from Manasquan, New Jersey.  You can view the results of a fully-trained surfer detector on a full day's worth of scenes at [Vimeo](https://vimeo.com/citrusvanilla/surferdetection).
 Password is 'rockrockrockrockawaybeach'.
@@ -38,9 +37,9 @@ The goal is to detect surfers towards the quantification of crowd sizes.
 * Leaky RELUs, Local Response Normalization, decaying learning rate
 
 ## Model Architecture
-The model in this demo is a multi-layer architecture consisting of alternating convolutions and nonlinearities.
+The model in this demo is a multi-layer architecture consisting of alternating convolutions and non-linearities.
 These layers are followed by fully connected layers leading into a softmax classifier. 
-The model follows the architecture described by [Alex Krizhevsky](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf).
+The model follows closely the architecture described by [Alex Krizhevsky](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf).
 
 This model achieves a peak performance of about 95% accuracy in about an hour on a CPU. 
 
@@ -124,7 +123,7 @@ by entering the the following command at the commandline after training has comm
     tensorboard --logdir=/surferdetection/surferdetection_train
 
 
-**Launching and Training the Model**
+## Launching and Training the Model
 
 Launch training from the commandline with the script surferdetection_train.py.
 
@@ -138,7 +137,7 @@ You should see output like this:
     
 The script reports the loss and accuracy on the image every 50 steps, as well as the speed at which the last image was processed.
 
-surferdetection_train.py saves all model parameters in checkpoint files every 1000 steps but it does not evaluate the model. 
+_surferdetection_train.py_ saves all model parameters in checkpoint files every 1000 steps but it does not evaluate the model. 
 The checkpoint file will be used by surferdetection_eval.py to measure the predictive performance.
 
 Launch periodic evaluation (set to evaluate the full validation set every 2 minutes) from the commandline after training has commenced:
@@ -152,10 +151,11 @@ This evaluation simply gives accuracy on the evaluation set as a percentage.  Yo
 The training script calculates the moving average version of all learned variables. The evaluation script substitutes all learned model 
 parameters with the moving average version. This substitution boosts model performance at evaluation time.
 
-**Visualize Unseen Scenes**
+**Visualizing Test Scenes**
 
 The Jupyter Notebook file 'surferdetection_predictscene.ipynb' has been provided to help you visualize prediction on unseen scenes.
-This notebook will utilize the surferdetection_predict.py file that makes use of a fully-trained surfer detector model in the surferdetection_restore directory.
+This notebook utilizes the surferdetection_predict.py file that makes use of a fully-trained surfer detector model in the surferdetection_restore directory.
+
 Launch the notebook from the commandline with the following:
 
     ipython notebook surferdetection_predictscene.ipynb
