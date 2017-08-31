@@ -1,20 +1,15 @@
-# NOTE THESE TEMPLATES COME FROM TENSORFLOW TUTORIALS,
-# WHICH HAVE THE FOLLOWING LICENSE RESTRICTIONS
-# 
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
+##
+## Surfer Detection
+## surferdetection_train.py
+##
+## Original Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+##
+## Originally licensed under the Apache License, V. 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+##
+## All modifications attributed to Justin Fung, 2017.
+##
+## ====================================================================
 
 
 """A binary to train SURFERDETECTION using a single GPU.
@@ -25,9 +20,9 @@ data) as judged by surferdetection_eval.py.
 
 Speed: With online training.
 
-System                       | Step Time (sec/image)  |     Accuracy
+System                       | Step Time (sec/img) | Accuracy
 ------------------------------------------------------------------
-1 CPU 2.6 GHz Intel Core i5  | 0.03                   | ~94% at 130K steps (1 hour)
+1 CPU 2.6 GHz Intel Core i5  | 0.03                | ~94% at 130K steps (1 hr)
 
 Usage:
 Please see the README for how to download the surferdetection
@@ -44,9 +39,9 @@ from __future__ import print_function
 from datetime import datetime
 import os.path
 import time
+from six.moves import xrange  # pylint: disable=redefined-builtin
 
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
 import surferdetection
@@ -57,15 +52,16 @@ tf.app.flags.DEFINE_string('train_dir', 'surferdetection_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 200000,
-                            """Number of images to run.""") # one batch is 100 images
+                            """Number of images to run.""")
 tf.app.flags.DEFINE_boolean('log_device_placement', False,
                             """Whether to log device placement.""")
 tf.app.flags.DEFINE_boolean('restore', False,
-                           """If True, restore a pretrained model""")
-tf.app.flags.DEFINE_string('restore_file', 'surferdetection_restore/restore_model.ckpt',
+                            """If True, restore a pretrained model""")
+tf.app.flags.DEFINE_string('restore_file',
+                           'surferdetection_restore/restore_model.ckpt',
                            """Directory where to restore parameters""")
 tf.app.flags.DEFINE_integer('starting_step', 1,
-                           """Initial step of training""")
+                            """Initial step of training""")
 
 def train():
   """Train SURFERDETECTION for max_steps."""
@@ -102,7 +98,8 @@ def train():
     init = tf.initialize_all_variables()
 
     # Start running operations on the Graph.
-    sess = tf.Session(config=tf.ConfigProto(log_device_placement=FLAGS.log_device_placement))
+    sess = tf.Session(config=tf.ConfigProto(
+                log_device_placement=FLAGS.log_device_placement))
     sess.run(init)
 
     # Restore a session.
@@ -113,9 +110,10 @@ def train():
 
     summary_writer = tf.train.SummaryWriter(FLAGS.train_dir, sess.graph)
 
-    for step in xrange(FLAGS.starting_step,FLAGS.max_steps):
+    for step in xrange(FLAGS.starting_step, FLAGS.max_steps):
       start_time = time.time()
-      _, loss_value, accuracy_value, batch_mean = sess.run([train_op, loss, accuracy, distribution_mean])
+      _, loss_value, accuracy_value, batch_mean = sess.run(
+                        [train_op, loss, accuracy, distribution_mean])
       duration = time.time() - start_time
 
       assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
@@ -124,13 +122,18 @@ def train():
         summary_str = sess.run(summary_op)
         summary_writer.add_summary(summary_str, step)
 
-      # Only prints for every 50th step... more-frequent printing suggested for "babysitting" training.
+      # Only prints for every 50th step...
+      # more-frequent printing suggested for "babysitting" training.
       if step % 50 == 0:
         num_examples_per_step = FLAGS.batch_size
         examples_per_sec = num_examples_per_step / duration
         sec_per_batch = float(duration)
-        format_str = ('%s: step %d, loss = %.2f (%.1f examples/sec; %.3f sec/batch), training accuracy = %.2f, batch mean = %.2f')
-        print (format_str % (datetime.now(), step, loss_value, examples_per_sec, sec_per_batch, accuracy_value, batch_mean))
+        format_str = ('%s: step %d, loss = %.2f '
+                      '(%.1f examples/sec; %.3f sec/batch), '
+                      'training accuracy = %.2f, batch mean = %.2f')
+        print (format_str % (datetime.now(), step, loss_value,
+                             examples_per_sec, sec_per_batch,
+                             accuracy_value, batch_mean))
 
       # Save the model checkpoint periodically.
       if step % 1000 == 0 or (step + 1) == FLAGS.max_steps:
