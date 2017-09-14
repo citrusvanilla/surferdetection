@@ -118,9 +118,9 @@ The objective function for the model is the sum of the cross entropy loss and
 all these weight decay terms,  as returned by the loss() function.
 
 Training can be "babysat" using Google's [Tensorboard](https://www.tensorflow.org/how_tos/summaries_and_tensorboard/),
-by entering the the following command at the commandline after training has commenced:
+by entering the the following command at the commandline after training has commenced, while in the surferdetection directory:
 
-    tensorboard --logdir=/surferdetection/surferdetection_train
+    tensorboard --logdir=./surferdetection_train
 
 
 ## Launching and Training the Model
