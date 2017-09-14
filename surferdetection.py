@@ -60,9 +60,9 @@ tf.app.flags.DEFINE_boolean('use_fp16', False,
 # Global constants describing the SURFERDETECTION data set.
 IMAGE_SIZE = surferdetection_input.IMAGE_SIZE # =80
 NUM_CLASSES = surferdetection_input.NUM_CLASSES # =5
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = \
                surferdetection_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN # =10000
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = \
                surferdetection_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL # =997
 
 # Paramters for the training op

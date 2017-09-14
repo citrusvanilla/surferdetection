@@ -124,7 +124,7 @@ def train():
 
       # Only prints for every 50th step...
       # more-frequent printing suggested for "babysitting" training.
-      if step % 50 == 0:
+      if step % 5 == 0:
         num_examples_per_step = FLAGS.batch_size
         examples_per_sec = num_examples_per_step / duration
         sec_per_batch = float(duration)

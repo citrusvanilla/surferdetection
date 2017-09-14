@@ -102,7 +102,7 @@ def contrast_brightness(img_as_array):
     intensity_max = random.randint(intensity_min+100,255)
 
     return exposure.rescale_intensity(img_as_array, 
-                                      out_range=(intensity_min, intensity_max)),
+                                  out_range=(intensity_min, intensity_max)), \
            (intensity_min, intensity_max)
 
 
@@ -145,7 +145,7 @@ def rotate(img_as_array, max_rotation_angle):
     rotation_angle = random.randint(-max_rotation_angle, max_rotation_angle)
     return transform.rotate(img_as_array, rotation_angle, resize=True,
                             center=None, order=1, mode='constant', cval=140,
-                            clip=True, preserve_range=True).astype(np.uint8),
+                           clip=True, preserve_range=True).astype(np.uint8), \
            rotation_angle
 
 
@@ -194,7 +194,7 @@ def rescale(img_as_array,min_xy_scale_factor):
     return transform.warp(img_as_array, affine_transform, map_args={},
                           output_shape=None, order=1, mode='constant',
                           cval=140.0, clip=True,
-                          preserve_range=True).astype(np.uint8),
+                          preserve_range=True).astype(np.uint8), \
            scale_xy
 
 
@@ -228,7 +228,7 @@ def translate(img_as_array,output_size,scale_xy):
     return transform.warp(img_as_array, affine_transform, map_args={},
                           output_shape=None, order=1, mode='constant',
                           cval=140.0, clip=True,
-                          preserve_range=True).astype(np.uint8),
+                          preserve_range=True).astype(np.uint8), \
            translation_xy
 
 

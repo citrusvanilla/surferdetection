@@ -55,9 +55,9 @@ NUM_EVAL_IMAGES = 500
 NUM_EVAL_IMG_PER_CLASS = [250,250]
 
 # If using unbalanced data
-NUM_EXAMPLES_PER_BALANCED_CLASS = 
+NUM_EXAMPLES_PER_BALANCED_CLASS = \
        int(NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / NUM_CLASSES)
-OVERSAMPLE_FACTOR_PER_CLASS = 
+OVERSAMPLE_FACTOR_PER_CLASS = \
        [int(round(NUM_EXAMPLES_PER_BALANCED_CLASS/j))
         for j in NUM_TRAIN_IMG_PER_CLASS]
 
@@ -209,11 +209,11 @@ def distorted_inputs(data_dir, batch_size):
     # Vertically stack tensors in a batch:
     def f0(): return tf.concat(
         0,
-        [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[0]),
+        [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[0]), \
         tf.concat(0, [label]*OVERSAMPLE_FACTOR_PER_CLASS[0])
     def f1(): return tf.concat(
         0,
-        [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[1]),
+        [reshaped_image]*OVERSAMPLE_FACTOR_PER_CLASS[1]), \
         tf.concat(0, [label]*OVERSAMPLE_FACTOR_PER_CLASS[1])
   
     [os_images, os_labels] = tf.cond(pred0, f0, lambda: [os_images, os_labels])
