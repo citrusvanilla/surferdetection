@@ -81,7 +81,7 @@ However, augmentation uses external Numpy functions in surferdetector_augmentati
 
 * Images are normalized to [0,1].
 * Images are randomly flipped from left to right.
-* Images are randomly rotated through [-12,12} degrees.
+* Images are randomly rotated through [-12,12] degrees.
 * X and Y axis are randomly scaled independently through [0.80, 1.0] percent.
 * Rescaled images are randomly translated within a patch, while still preserving all original pixels.
 
